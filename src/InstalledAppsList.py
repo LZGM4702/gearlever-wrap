@@ -5,7 +5,6 @@ import logging
 
 from .State import state
 from time import sleep
-from .lib.constants import APP_ID, ONE_UPDATE_AVAILABLE_LABEL, UPDATES_AVAILABLE_LABEL
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageListElement
 from .models.AppListElement import InstalledStatus
@@ -29,6 +28,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
     CHECK_FOR_UPDATES_LABEL = _('Check for updates')
     NO_UPDATES_FOUND_LABEL = _('No updates found')
     CHECKING_FOR_UPDATES_LABEL = _('Checking updates...')
+    NO_CONNECTION_LABEL = _('No Connection')
     UPDATE_ALL_LABEL = _('Update all')
 
     def __init__(self):
@@ -143,6 +143,18 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         global fetch_updates_cache
 
         if not check_internet():
+            def _show_no_connection():
+                self.updates_btn.set_label(self.NO_CONNECTION_LABEL)
+                self.updates_btn.add_css_class('destructive-action')
+                self.updates_btn.set_sensitive(True)
+
+            def _reset_btn():
+                self.updates_btn.set_label(self.CHECK_FOR_UPDATES_LABEL)
+                self.updates_btn.remove_css_class('destructive-action')
+                return GLib.SOURCE_REMOVE
+
+            GLib.idle_add(_show_no_connection)
+            GLib.timeout_add_seconds(3, _reset_btn)
             return
 
         logging.debug('Fetching for updates for all apps')
