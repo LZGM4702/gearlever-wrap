@@ -1069,7 +1069,9 @@ class AppDetails(Gtk.ScrolledWindow):
 
         app_conf = self.get_config_for_app()
         app_conf['wrapper_command'] = text
-        save_config_for_app(app_conf)
+
+        # use new config method
+        Config.set_app_config(self.app_list_element, app_conf)
 
         try:
             self.provider.update_desktop_file(self.app_list_element)
