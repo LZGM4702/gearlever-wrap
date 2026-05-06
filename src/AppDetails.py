@@ -429,16 +429,6 @@ class AppDetails(Gtk.ScrolledWindow):
             self.update_installation_status()
 
             self.provider.uninstall(self.app_list_element)
-
-            app_config = self.get_config_for_app()
-            conf = read_json_config('apps')
-
-            if 'b64name' in app_config and app_config['b64name'] in conf:
-                del conf[app_config['b64name']]
-                set_json_config('apps', conf)
-            else:
-                logging.warn('Missing app key from app config')
-
             self.emit('uninstalled-app', self)
 
     @_async
